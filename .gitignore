@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Logs y temporales
+*.log
+*.tmp
