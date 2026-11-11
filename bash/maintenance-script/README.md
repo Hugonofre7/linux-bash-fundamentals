@@ -18,3 +18,5 @@ ip a
 # Verificación de dispositivos de almacenamiento detectados por el kernel
 lsblk
 
+# Revisamos los registros iniciales del kernel y el comportamiento de systemd al arrancar
+sudo dmesg | grep -i disk
