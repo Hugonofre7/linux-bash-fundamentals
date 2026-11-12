@@ -20,3 +20,24 @@ lsblk
 
 # Revisamos los registros iniciales del kernel y el comportamiento de systemd al arrancar
 sudo dmesg | grep -i disk
+
+## Laboratorio Capítulo 2: Manipulación de Archivos y Permisos
+
+### 1. Creación de archivos de configuración (Heredoc)
+Creamos un archivo de configuración simulado utilizando la redirección por bloques (`Heredoc`):
+```bash
+cat << 'EOF' > app_config.conf
+# Configuración del servicio de epidemiología
+SERVER_HOST=127.0.0.1
+PORT=8080
+DEBUG_MODE=false
+DB_USER=admin_local
+EOF
+
+
+### 2. Filtrado de flujos de texto
+grep -v "^#" app_config.conf
+
+### 3. Gestión y restricción de permisos (chmod)
+chmod 600 app_config.conf
+ls -l app_config.conf
