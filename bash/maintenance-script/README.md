@@ -41,3 +41,35 @@ grep -v "^#" app_config.conf
 ### 3. Gestión y restricción de permisos (chmod)
 chmod 600 app_config.conf
 ls -l app_config.conf
+
+## Laboratorio Capítulo 2 (Parte 2): Redirección Avanzada, Enlaces y Sucesos
+
+### 1. Redirección de errores estándar (`stderr` vs `stdout`)
+Capturamos y separamos la salida correcta de los errores del sistema utilizando los descriptores de archivos:
+```bash
+# Enviar el error estándar a un archivo de registro específico (descriptor 2)
+ls archivo_inexistente.txt 2> error.log
+
+# Combinar salida estándar y errores en un solo archivo log
+ls app_config.conf archivo_inexistente.txt > todo_junto.log 2>&1
+
+### 2. Enlaces simbólicos (`ln -s`)
+Creamos accesos directos inteligentes que apuntan a archivos o directorios sin duplicar espacio en el disco:
+```bash
+# Crear un enlace simbólico apuntando al archivo de configuración
+ln -s app_config.conf config_actual.conf
+
+# Verificar los detalles del enlace y su destino
+ls -l config_actual.conf
+
+### 3. Inspección rápida de archivos (`head`, `tail`, `wc`)
+Inspeccionamos contenidos pesados o de registros sin necesidad de abrir editores completos:
+```bash
+# Ver las primeras 3 líneas
+head -n 3 app_config.conf
+
+# Ver las últimas 2 líneas
+tail -n 2 app_config.conf
+
+# Contar el número total de líneas del archivo
+wc -l app_config.conf
