@@ -33,3 +33,27 @@ sudo mkfs.ext4 /dev/loop24p1
 sudo mkdir -p /mnt/datos_practica
 sudo mount /dev/loop24p1 /mnt/datos_practica
 Verificación: df -h /mnt/datos_practica confirma el espacio disponible y lsblk /dev/loop24 muestra el punto de montaje activo.
+
+## Capítulo 4 (Parte 2): Montaje Persistente con `/etc/fstab`
+
+### 1. Obtención del UUID de la partición
+```bash
+# Consultar el identificador único del sistema de archivos
+sudo blkid /dev/loop24p1
+# Resultado obtenido: UUID="fc2ace48-7830-4492-8e97-c736b5bf5077"
+
+### 2. Configuración en /etc/fstab
+Bash
+# Crear un respaldo de seguridad del archivo actual
+sudo cp /etc/fstab /etc/fstab.bak
+
+# Agregar la regla de montaje persistente usando el UUID
+UUID=fc2ace48-7830-4492-8e97-c736b5bf5077 /mnt/datos_practica ext4 defaults 0 2
+### 3. Recarga y Validación del Sistema
+Bash
+# Actualizar el demonio de systemd para reconocer los cambios
+sudo systemctl daemon-reload
+
+# Aplicar y validar los montajes configurados
+sudo mount -a
+Verificación: lsblk /dev/loop24 confirma que la partición monta automáticamente su punto de montaje /mnt/datos_practica.
