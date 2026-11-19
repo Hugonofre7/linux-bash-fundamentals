@@ -83,3 +83,6 @@ Bash
 # Regenerar la imagen initramfs del kernel activo en modo detallado
 sudo update-initramfs -u -k $(uname -r) -v | tail -n 20
 Observación: El sistema delega en dracut con compresión zstd e incluye módulos tempranos de systemd, rootfs-block, virtiofs y qemu para generar /boot/initrd.img-6.17.0-8-generic.
+
+> **Nota sobre permisos y lectura (`sudo` y `zstd`):** Las imágenes `/boot/initrd.img-*` tienen permisos restringidos a `root` (`-rw------- root root`), por lo que leer su contenido con `lsinitramfs` sin `sudo` devuelve `Permission denied`. Además, al cortar la salida con comandos como `head` o `grep` de forma limitada, puede aparecer `unmkinitramfs: zstd failed` porque el flujo comprimido en `zstd` se cierra antes de completarse.
+
