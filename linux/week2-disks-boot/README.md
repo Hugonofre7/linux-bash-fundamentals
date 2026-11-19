@@ -57,3 +57,29 @@ sudo systemctl daemon-reload
 # Aplicar y validar los montajes configurados
 sudo mount -a
 Verificación: lsblk /dev/loop24 confirma que la partición monta automáticamente su punto de montaje /mnt/datos_practica.
+
+## Capítulo 5 (Parte 1): Arranque del Kernel e `initramfs`
+
+### 1. Identificación del Kernel y Archivos de Arranque
+```bash
+# Consultar la versión del kernel en ejecución (arquitectura aarch64)
+uname -r
+# Salida: 6.17.0-8-generic
+
+# Revisar imágenes de kernel (vmlinuz) e initramfs (initrd.img) y sus enlaces simbólicos
+ls -lh /boot/vmlinuz* /boot/initrd.img*
+
+### 2. Inspección del Contenido del initramfs
+Bash
+# Listar contenido usando sudo (permisos restringidos a root) y compresión zstd
+sudo lsinitramfs /boot/initrd.img-$(uname -r) | head -n 25
+
+# Verificar módulos de almacenamiento y virtualización incluidos en la imagen
+sudo lsinitramfs /boot/initrd.img-$(uname -r) | grep -E "ext4|virtio|nvme|sd_mod" | head -n 15
+Observación: Se identificaron módulos comprimidos (*.ko.zst) como nvme, nvme-core y variantes virtio, necesarios antes de montar el sistema de archivos raíz definitivo.
+
+### 3. Regeneración de la Imagen con dracut
+Bash
+# Regenerar la imagen initramfs del kernel activo en modo detallado
+sudo update-initramfs -u -k $(uname -r) -v | tail -n 20
+Observación: El sistema delega en dracut con compresión zstd e incluye módulos tempranos de systemd, rootfs-block, virtiofs y qemu para generar /boot/initrd.img-6.17.0-8-generic.
