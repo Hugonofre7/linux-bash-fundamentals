@@ -103,3 +103,24 @@ sudo dmesg -T | grep -iE "command line|root|systemd|dracut" | head -n 20
 # Revisar fases posteriores del arranque y remount de sistemas de archivos
 sudo dmesg -T | grep -iE "mounted root|switching root|initrd|systemd[1]" | tail -n 25
 Observación: Se observa la descompresión del initramfs, la ejecución de systemd[1] en initrd sobre qemu (arm64), la espera del dispositivo raíz por UUID, el remount de sistemas de archivos (systemd-remount-fs.service), la carga de módulos (systemd-modules-load.service) y el inicio de systemd-journald.service.
+
+## Capítulo 5 (Parte 3): Rendimiento de Arranque, Targets y Estado con `systemd`
+
+### 1. Medición de Tiempos de Arranque (`systemd-analyze`)
+```bash
+# Desglose total del tiempo de arranque (kernel + initrd + userspace)
+systemd-analyze time
+
+# Top 10 de unidades más lentas durante la inicialización
+systemd-analyze blame | head -n 10
+
+Observación: Se midieron los tiempos de kernel (273ms), initrd (1.293s) y userspace (1min 36.250s hasta graphical.target), identificando servicios como fwupd-refresh.service y plymouth-quit-wait.service junto con dispositivos virtuales QEMU/SPICE.
+
+### 2. Objetivo Predeterminado y Unidades Fallidas (systemctl)
+Bash
+# Consultar el target por defecto del sistema
+systemctl get-default
+
+# Verificar si existen unidades en estado fallido
+systemctl --failed
+Observación: El target por defecto es graphical.target y systemctl --failed reporta 0 loaded units listed.
