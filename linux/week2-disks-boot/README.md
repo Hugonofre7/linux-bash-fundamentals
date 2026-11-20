@@ -86,3 +86,20 @@ Observación: El sistema delega en dracut con compresión zstd e incluye módulo
 
 > **Nota sobre permisos y lectura (`sudo` y `zstd`):** Las imágenes `/boot/initrd.img-*` tienen permisos restringidos a `root` (`-rw------- root root`), por lo que leer su contenido con `lsinitramfs` sin `sudo` devuelve `Permission denied`. Además, al cortar la salida con comandos como `head` o `grep` de forma limitada, puede aparecer `unmkinitramfs: zstd failed` porque el flujo comprimido en `zstd` se cierra antes de completarse.
 
+## Capítulo 5 (Parte 2): Parámetros del Kernel, `dmesg` y Arranque con `systemd`
+
+### 1. Parámetros de Arranque del Kernel (`/proc/cmdline`)
+```bash
+# Consultar la línea de parámetros entregada al kernel en el arranque actual
+cat /proc/cmdline
+
+Observación: Incluye BOOT_IMAGE=..., root=UUID=... (identificación estable de la raíz), ro (montaje inicial de solo lectura), parámetros de consola y reserva de memoria crashkernel=....
+
+### 2. Inspección del Buffer del Kernel (dmesg) y Transición a systemd
+Bash
+# Filtrar línea de comandos, montaje de raíz y actividad de systemd con marcas de tiempo
+sudo dmesg -T | grep -iE "command line|root|systemd|dracut" | head -n 20
+
+# Revisar fases posteriores del arranque y remount de sistemas de archivos
+sudo dmesg -T | grep -iE "mounted root|switching root|initrd|systemd[1]" | tail -n 25
+Observación: Se observa la descompresión del initramfs, la ejecución de systemd[1] en initrd sobre qemu (arm64), la espera del dispositivo raíz por UUID, el remount de sistemas de archivos (systemd-remount-fs.service), la carga de módulos (systemd-modules-load.service) y el inicio de systemd-journald.service.
